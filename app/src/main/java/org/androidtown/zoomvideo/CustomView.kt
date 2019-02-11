@@ -11,6 +11,9 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.TextureView
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 class ZoomableTextureView : TextureView {
 
@@ -29,6 +32,8 @@ class ZoomableTextureView : TextureView {
     private var saveScale = 1f
     private var mode = NONE
 
+
+
     private var mmatrix = Matrix()
     private var mScaleDetector: ScaleGestureDetector? = null
     private var m: FloatArray? = null
@@ -37,6 +42,10 @@ class ZoomableTextureView : TextureView {
     private val start = PointF()
     private var right: Float = 0.toFloat()
     private var bottom: Float = 0.toFloat()
+
+    private var m_zoomlayout:FrameLayout? =null
+    private var m_ZoomRate:TextView? =null
+    private var iszoom:Boolean = false
 
     fun setMinScale(scale: Float) {
         if (scale < 1.0f || scale > maxScale)
@@ -65,25 +74,30 @@ class ZoomableTextureView : TextureView {
         initView(attrs)
     }
 
-    override fun onSaveInstanceState(): Parcelable? {
-        val bundle = Bundle()
-        bundle.putParcelable(SUPERSTATE_KEY, super.onSaveInstanceState())
-        bundle.putFloat(MIN_SCALE_KEY, minScale)
-        bundle.putFloat(MAX_SCALE_KEY, maxScale)
-        return bundle
-
+    fun setzoomlayout(layout:FrameLayout?, textView: TextView?){
+        m_zoomlayout = layout
+        m_ZoomRate = textView
     }
 
-    public override fun onRestoreInstanceState(state: Parcelable?) {
-        var state = state
-        if (state is Bundle) {
-            val bundle = state as Bundle?
-            this.minScale = bundle!!.getInt(MIN_SCALE_KEY).toFloat()
-            this.minScale = bundle.getInt(MAX_SCALE_KEY).toFloat()
-            state = bundle.getParcelable(SUPERSTATE_KEY)
-        }
-        super.onRestoreInstanceState(state)
-    }
+//    override fun onSaveInstanceState(): Parcelable? {
+//        val bundle = Bundle()
+//        bundle.putParcelable(SUPERSTATE_KEY, super.onSaveInstanceState())
+//        bundle.putFloat(MIN_SCALE_KEY, minScale)
+//        bundle.putFloat(MAX_SCALE_KEY, maxScale)
+//        return bundle
+//
+//    }
+//
+//    public override fun onRestoreInstanceState(state: Parcelable?) {
+//        var state = state
+//        if (state is Bundle) {
+//            val bundle = state as Bundle?
+//            this.minScale = bundle!!.getInt(MIN_SCALE_KEY).toFloat()
+//            this.minScale = bundle.getInt(MAX_SCALE_KEY).toFloat()
+//            state = bundle.getParcelable(SUPERSTATE_KEY)
+//        }
+//        super.onRestoreInstanceState(state)
+//    }
 
     private fun initView(attrs: AttributeSet?) {
         val a = context!!.theme.obtainStyledAttributes(
@@ -160,13 +174,23 @@ class ZoomableTextureView : TextureView {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 var mScaleFactor = detector.scaleFactor
                 val origScale = saveScale
+
                 saveScale *= mScaleFactor
+
+
                 if (saveScale > maxScale) {
                     saveScale = maxScale
                     mScaleFactor = maxScale / origScale
                 } else if (saveScale < minScale) {
                     saveScale = minScale
                     mScaleFactor = minScale / origScale
+                }
+
+                if(saveScale > 1.0f){
+                    m_zoomlayout?.visibility = View.VISIBLE
+                    m_ZoomRate?.text = String.format("%.1f", saveScale)
+                }else if(saveScale <= 1.0f){
+                    m_zoomlayout?.visibility = View.INVISIBLE
                 }
 
                 right = width * saveScale - width
@@ -195,7 +219,6 @@ class ZoomableTextureView : TextureView {
                         }
                     }
                 } else {
-
                     mmatrix.postScale(mScaleFactor, mScaleFactor, detector.focusX, detector.focusY)
                     mmatrix.getValues(m)
                     val x = m!![Matrix.MTRANS_X]
