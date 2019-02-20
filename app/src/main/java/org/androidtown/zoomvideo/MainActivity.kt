@@ -7,8 +7,12 @@ import android.os.Bundle
 import android.view.Surface
 import android.view.TextureView
 import android.widget.FrameLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
+import android.view.WindowManager
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,14 +21,22 @@ class MainActivity : AppCompatActivity() {
     private var m_CustomView : ZoomableTextureView? = null
     private var m_Frame : FrameLayout? =null
     private var m_FrameText : TextView? =null
+    private var m_ZoomRateLayout : RelativeLayout? =null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+
         setContentView(R.layout.activity_main)
 
         m_CustomView = findViewById(R.id.customview)
-        m_Frame = findViewById(R.id.zoomlayout)
-        m_FrameText = findViewById(R.id.zoom_rate)
+        m_Frame = findViewById(R.id.zoomlayout_lan)
+        m_FrameText = findViewById(R.id.zoom_rate_lan)
+        m_ZoomRateLayout = findViewById(R.id.zoom_rate_layout_lan)
 
 
         m_CustomView?.surfaceTextureListener = object : TextureView.SurfaceTextureListener{
@@ -48,7 +60,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        m_CustomView?.setzoomlayout(m_Frame,m_FrameText)
+        m_CustomView?.setzoomlayout(m_Frame,m_ZoomRateLayout,m_FrameText)
 
     }
 }
