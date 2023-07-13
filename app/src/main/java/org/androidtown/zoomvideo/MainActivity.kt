@@ -1,66 +1,80 @@
 package org.androidtown.zoomvideo
 
+import android.content.res.Resources
 import android.graphics.SurfaceTexture
-import android.media.MediaPlayer
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Surface
 import android.view.TextureView
-import android.widget.FrameLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
-import kotlinx.android.synthetic.main.activity_main.*
-import android.view.WindowManager
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.media3.common.MediaItem
+import androidx.media3.common.VideoSize
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
+import org.androidtown.zoomvideo.databinding.ActivityMainBinding
 
 
-
+@UnstableApi
 class MainActivity : AppCompatActivity() {
 
-    private val path:String = "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
-
-    private var m_CustomView : ZoomableTextureView? = null
-    private var m_Frame : FrameLayout? =null
-    private var m_FrameText : TextView? =null
-    private var m_ZoomRateLayout : RelativeLayout? =null
-
+    private val path: String = "https://www.rmp-streaming.com/media/big-buck-bunny-360p.mp4"
+ 
+    private val exoPlayer by lazy {
+        ExoPlayer.Builder(this).build()
+    }
+    private val binding by lazy { 
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
 
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
-        m_CustomView = findViewById(R.id.customview)
-        m_Frame = findViewById(R.id.zoomlayout_lan)
-        m_FrameText = findViewById(R.id.zoom_rate_lan)
-        m_ZoomRateLayout = findViewById(R.id.zoom_rate_layout_lan)
-
-
-        m_CustomView?.surfaceTextureListener = object : TextureView.SurfaceTextureListener{
-
-            override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
-                var mediaPlayer : MediaPlayer =  MediaPlayer()
-                mediaPlayer.setSurface(Surface(surface))
-
-                mediaPlayer.setDataSource(path)
-                mediaPlayer.prepare()
-                mediaPlayer.start()
-            }
-
-            override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
-            }
-
-            override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
-                return false
-            }
-            override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
-            }
+        binding.customview.setOnClickListener {
+            Toast.makeText(this,"Click TextureView",Toast.LENGTH_SHORT).show()
         }
 
-        m_CustomView?.setzoomlayout(m_Frame,m_ZoomRateLayout,m_FrameText)
+        binding.customview.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
 
+            override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
+                exoPlayer.setVideoSurface(Surface(surface))
+                exoPlayer.setMediaItem(MediaItem.fromUri(path))
+                exoPlayer.prepare()
+                exoPlayer.play()
+                exoPlayer.addAnalyticsListener(object : AnalyticsListener {
+                    override fun onVideoSizeChanged(eventTime: AnalyticsListener.EventTime, videoSize: VideoSize) {
+                        super.onVideoSizeChanged(eventTime, videoSize)
+                        val params = binding.customview.layoutParams
+                        if (videoSize.width >= videoSize.height) {
+                            params.width = ViewGroup.LayoutParams.MATCH_PARENT
+                            params.height = Resources.getSystem().displayMetrics.widthPixels * videoSize.height / videoSize.width
+                        } else {
+                            params.width = Resources.getSystem().displayMetrics.heightPixels * videoSize.width / videoSize.height
+                            params.height = ViewGroup.LayoutParams.MATCH_PARENT
+                        }
+                        binding.customview.layoutParams = params
+                    }
+                })
+            }
+
+            override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
+            }
+
+            override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
+                return false
+            }
+
+            override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
+            }
+        }
     }
+
+    override fun onPause() {
+        super.onPause()
+        exoPlayer.pause()
+    }
+
 }

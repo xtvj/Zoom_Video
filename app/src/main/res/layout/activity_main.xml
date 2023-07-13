@@ -1,83 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent" android:layout_height="match_parent"
-        tools:context=".MainActivity">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
     <org.androidtown.zoomvideo.ZoomableTextureView
-            android:id="@+id/customview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    <FrameLayout
-            android:id="@+id/zoomlayout"
-            android:visibility="gone"
-            android:layout_width="216px"
-            android:layout_height="406.2px"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="30dp"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/minimap">
-
-        <RelativeLayout
-                android:id="@+id/zoom_rate_layout"
-                android:background="@drawable/zoom_rate"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+        android:id="@+id/customview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 
-            <TextView
-                    android:id="@+id/zoom_rate"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-
-                    android:text="x0.0"
-                    android:textColor="#FFFFFF"
-                    android:textSize="25dp"
-
-                    android:layout_centerInParent="true"
-            />
-
-        </RelativeLayout>
-    </FrameLayout>
-
-    <FrameLayout
-            android:id="@+id/zoomlayout_lan"
-            android:layout_width="@dimen/px_438"
-            android:layout_height="@dimen/px_240"
-            android:background="@drawable/minimap"
-
-            android:layout_marginRight="@dimen/px_30"
-            android:layout_marginTop="@dimen/px_30"
-
-            android:layout_alignParentRight="true"
-            >
-
-        <RelativeLayout
-                android:id="@+id/zoom_rate_layout_lan"
-                android:background="@drawable/zoom_rate"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-
-            <TextView
-                    android:id="@+id/zoom_rate_lan"
-                    android:layout_height="@dimen/px_74"
-                    android:layout_width="@dimen/px_132"
-
-                    android:text="x0.0"
-                    android:textColor="#FFFFFF"
-                    android:fontFamily="@font/def_font"
-                    android:includeFontPadding="false"
-                    android:textSize="@dimen/px_50"
-                    android:gravity="center"
-
-                    android:layout_centerInParent="true"
-            />
-
-        </RelativeLayout>
-    </FrameLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
