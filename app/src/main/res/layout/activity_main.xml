@@ -9,6 +9,7 @@
     <org.androidtown.zoomvideo.ZoomableTextureView
         android:id="@+id/customview"
         android:layout_width="match_parent"
+        app:maxScale="6"
         android:layout_height="match_parent" />
 
 
